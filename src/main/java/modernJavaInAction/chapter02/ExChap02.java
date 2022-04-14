@@ -1,12 +1,16 @@
-package main.java.ModernJavaInAction.Chapter02;
+package modernJavaInAction.chapter02;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import static main.java.ModernJavaInAction.Chapter02.ExChap02.Color.*;
+import static modernJavaInAction.chapter02.ExChap02.Color.*;
 
 public class ExChap02 {
+
+    enum Color {
+        RED, GREEN
+    }
 
     public static void main(String[] args) {
         List<Apple> inventory = Arrays.asList(
@@ -15,50 +19,6 @@ public class ExChap02 {
                 new Apple(180, GREEN),
                 new Apple(155, RED)
         );
-
-        // 1. 녹색 사과만 필터링하고 싶다
-        List<Apple> greenApples = filterGreenApples(inventory);
-        for (Apple apple : greenApples) {
-            System.out.println("1st apple = " + apple.getWeight() + " " + apple.getColor());
-        }
-
-        // 2. 특정 색깔의 사과만 필터링하고 싶다
-        List<Apple> colorApples = filterApplesByColor(inventory, RED);
-        for (Apple apple : colorApples) {
-            System.out.println("2nd apple = " + apple.getWeight() + " " + apple.getColor());
-        }
-
-        // 3. 무게가 얼마 이상인 사과만 필터링하고 싶다(무게는 바뀔 수 있다)
-        List<Apple> weightApples = filterApplesByWeight(inventory, 150);
-        for (Apple apple : weightApples) {
-            System.out.println("3rd apple = " + apple.getWeight() + " " + apple.getColor());
-        }
-
-        // 4. 하나의 메서드로 색 또는 무게 기준으로 사과를 필터링하고 싶다
-        List<Apple> greenAndAnyWeightApples = filterApples(inventory, GREEN, 0, true);
-        for (Apple apple : greenAndAnyWeightApples) {
-            System.out.println("4th apple = " + apple.getWeight() + " " + apple.getColor());
-        }
-        // 동작은 하지만 flag 값의 의미도 불분명하고, 확장하기도 좋지 않은 코드다.
-        // filterApples 에 어떤 기준으로 사과를 필터링할 지 효과적으로 전달할 방법은?
-
-        // 5. ApplePredicate interface 를 활용한 필터링
-        // 파라미터를 추가하는 방식이 아닌, 변화하는 요구사항에 좀 더 유연하게 대응할 수 있는 방법 => 메서드의 동작을 파라미터화 하는 것.
-        List<Apple> redApples = filterApples(inventory, new ApplePredicate() {
-            @Override
-            public boolean test(Apple apple) {
-                return apple.getColor().equals(RED);
-            }
-        });
-        for (Apple apple : redApples) {
-            System.out.println("5th apple = " + apple.getWeight() + " " + apple.getColor());
-        }
-
-        // 6. 람다식으로 변환(IDE 자동변환 - 익명 타입을 람다로 변환 - 활용)
-        List<Apple> greenAndOverWeightApples = filterApples(inventory, apple -> apple.getColor().equals(GREEN) && apple.getWeight() > 150);
-        for (Apple apple : greenAndOverWeightApples) {
-            System.out.println("6th apple = " + apple.getWeight() + " " + apple.getColor());
-        }
 
         /*
             퀴즈 2-1 유연한 prettyPrintApple 메서드 구현하기
@@ -69,9 +29,9 @@ public class ExChap02 {
         prettyPrintApple(inventory, new AppleHeavyOrLightPrint());
         prettyPrintApple(inventory, new AppleWeightPrint());
 
-    } // end of main
+    }
 
-    // 1번
+    // 1. 녹색 사과만 필터링하고 싶다
     public static List<Apple> filterGreenApples(List<Apple> inventory) {
         List<Apple> result = new ArrayList<>();
         for (Apple apple : inventory) {
@@ -82,7 +42,7 @@ public class ExChap02 {
         return result;
     }
 
-    // 2번
+    // 2. 특정 색깔의 사과만 필터링하고 싶다
     public static List<Apple> filterApplesByColor(List<Apple> inventory, Color color) {
         List<Apple> result = new ArrayList<>();
         for (Apple apple : inventory) {
@@ -93,7 +53,7 @@ public class ExChap02 {
         return result;
     }
 
-    // 3번
+    // 3. 무게가 얼마 이상인 사과만 필터링하고 싶다(무게는 바뀔 수 있다)
     public static List<Apple> filterApplesByWeight(List<Apple> inventory, int weight) {
         List<Apple> result = new ArrayList<>();
         for (Apple apple : inventory) {
@@ -104,8 +64,8 @@ public class ExChap02 {
         return result;
     }
 
-    // 4번
-    public static List<Apple> filterApples(List<Apple> inventory, Color color, int weight, boolean flag) {
+    // 4. 하나의 메서드로 색 또는 무게 기준으로 사과를 필터링하고 싶다
+    public static List<Apple> filterApplesByFlagParam(List<Apple> inventory, Color color, int weight, boolean flag) {
         List<Apple> result = new ArrayList<>();
         for(Apple apple : inventory) {
             if ((flag && apple.getColor().equals(color)) || (!flag && apple.getWeight() > weight)) {
@@ -114,8 +74,11 @@ public class ExChap02 {
         }
         return result;
     }
+    // 동작은 하지만 flag 값의 의미도 불분명하고, 확장하기도 좋지 않은 코드다.
+    // filterApples 에 어떤 기준으로 사과를 필터링할 지 효과적으로 전달할 방법은?
 
-    // 5번: ApplePredicate 를 이용한 필터 메서드
+    // 5. ApplePredicate interface 를 활용한 필터링
+    // 파라미터를 추가하는 방식이 아닌, 변화하는 요구사항에 좀 더 유연하게 대응할 수 있는 방법 => 메서드의 동작을 파라미터화 하는 것.
     public static List<Apple> filterApples(List<Apple> inventory, ApplePredicate p) {
         List<Apple> result = new ArrayList<>();
 
@@ -152,31 +115,14 @@ public class ExChap02 {
         }
     }
 
-    enum Color {RED, GREEN}
-
-    public static class Apple {
-        private int weight;
-        private Color color;
-
-        public Apple(int weight, Color color) {
-            this.weight = weight;
-            this.color = color;
+    // 7. 리스트 형식으로 추상화
+    public static <T> List<T> filter(List<T> list, Predicate<T> p) {
+        List<T> result = new ArrayList<>();
+        for(T e : list) {
+            if(p.test(e)) {
+                result.add(e);
+            }
         }
-
-        public int getWeight() {
-            return weight;
-        }
-
-        public void setWeight(int weight) {
-            this.weight = weight;
-        }
-
-        public Color getColor() {
-            return color;
-        }
-
-        public void setColor(Color color) {
-            this.color = color;
-        }
+        return result;
     }
 }
